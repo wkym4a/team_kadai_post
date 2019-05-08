@@ -1,5 +1,8 @@
 class TeamsController < ApplicationController
+  include TeamHelper
+
   before_action :authenticate_user!
+  before_action :chk_edit_authority, only: %i[edit update]
   before_action :set_team, only: %i[show edit update destroy]
 
   def index
@@ -30,6 +33,7 @@ class TeamsController < ApplicationController
   end
 
   def update
+
     if @team.update(team_params)
       redirect_to @team, notice: 'チーム更新に成功しました！'
     else
@@ -51,6 +55,12 @@ class TeamsController < ApplicationController
 
   def set_team
     @team = Team.friendly.find(params[:id])
+  end
+
+  def chk_edit_authority
+    if not has_edit_authority_team(Team.friendly.find(params[:id]).id)
+      redirect_to team_path(params[:id]), notice: '権限がない処理です。'
+    end
   end
 
   def team_params

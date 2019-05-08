@@ -27,6 +27,10 @@
 
   <div class="form-group">
     <%= form.hidden_field :owner_id, value: current_user.id %>
-    <%= form.submit '作成', class: 'btn btn-primary' %>
+
+    <% if (action_name == "new") || (has_edit_authority_team(@team.id)==true) %>
+      <%= form.submit '作成', class: 'btn btn-primary' %>
+    <% end %>
+
   </div>
 <% end %>
