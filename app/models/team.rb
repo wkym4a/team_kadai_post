@@ -4,6 +4,11 @@ class Team < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
 
+  validate :is_owner_teammember, on: :change_owner
+  # with_options on: :change_owner do
+  #   validate :is_owner_teammember on: :change_owner
+  # end
+
   belongs_to :owner, class_name: 'User', foreign_key: :owner_id
   has_many :assigns, dependent: :destroy
   has_many :members, through: :assigns, source: :user
@@ -15,4 +20,12 @@ class Team < ApplicationRecord
   def invite_member(user)
     assigns.create(user: user)
   end
+
+  def is_owner_teammember
+    if Team.find(id).members.find_by(id:owner_id).nil?
+      errors.add(" ","チームメンバーでない方をリーダーにしようとしています。")
+    end
+
+  end
+
 end

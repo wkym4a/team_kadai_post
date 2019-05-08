@@ -30,8 +30,20 @@
               <h5>チームリーダー</h5>
               <table class="table">
                 <tr>
-                  <td><%= image_tag 'default.jpg', size: '40x40' %></td>
-                  <td><label style="background-color: red">リーダー</label>：<%= @team.owner.email %></td>
+
+
+                  <%= form_with(model: @team,url: update_owner_team_path , local: true) do |form| %>
+                    <td><%= image_tag 'default.jpg', size: '40x40' %></td>
+                    <td><label style="background-color: red">リーダー</label>：<%= @team.owner.email %></td>
+                    <% if current_user.id == @team.owner_id %>
+                      <td>
+                        ▶▶▶
+                      <%= form.collection_select( :owner_id, @team.members.order(email: "ASC") , :id , :email,
+                       { include_blank: false, selected: current_user.id } ) %>
+                      <%= form.submit 'に変更' , class: 'btn btn-primary ' %>
+                      </td>
+                    <% end %>
+                  <% end %>
                 </tr>
               </table>
               <h5>チームメンバー</h5>
@@ -42,6 +54,7 @@
                       <td><%= image_tag 'default.jpg', size: '40x40' %></td>
                       <td><%= assign.user.email %></td>
                       <td><%= link_to '削除', team_assign_path(@team, assign), method: :delete, class: 'btn btn-sm btn-danger' %></td>
+
                     </tr>
                   <% end %>
                 </tbody>
