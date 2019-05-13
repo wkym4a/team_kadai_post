@@ -1,6 +1,10 @@
 
 <br><br><br>
 <%= form_with(model: @comment, local: true) do |form| %>
+
+<%= render 'layouts/show_danger_msg' %>
+
+
   <div class="field">
     <%= form.text_area :content, class: "comment_input" %>
   </div>
