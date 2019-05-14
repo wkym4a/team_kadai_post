@@ -1,3 +1,7 @@
+<h1>開発用メモ：このビューはどこからも呼び出されていない模様。確認が取れ次第、削除する。</h1>
+<h1>なおこのビューが想定している「agendaのediot画面」も、現状ではどこからも遷移していない。</h1>
+<h1>エラーの原因となりかねないため、「/agendas/:id/edit(.:format)」へのルーティングは先に排除した。</h1>
+
 <%= form_with(model: @agenda, local: true, url: choose_new_or_edit) do |form| %>
   <% if @agenda.errors.any? %>
     <div id="error_explanation">
