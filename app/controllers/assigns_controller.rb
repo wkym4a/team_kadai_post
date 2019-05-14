@@ -3,13 +3,18 @@ class AssignsController < ApplicationController
 
   def create
     team = Team.friendly.find(params[:team_id])
-    user = email_reliable?(assign_params) ? User.find_or_create_by_email(assign_params) : nil
-    if user
-      team.invite_member(user)
+
+    assign_info = team.invite_member_based_on_email(assign_params)
+
+    if assign_info.id.present?
+
       redirect_to team_url(team), notice: 'アサインしました！'
     else
-      redirect_to team_url(team), notice: 'アサインに失敗しました！'
+      #入力情報をセッション、エラー情報をフラッシュに保存して
+      flash[:danger] = assign_info.errors.full_messages
+      redirect_to team_url(team)
     end
+
   end
 
   def destroy
@@ -35,13 +40,13 @@ class AssignsController < ApplicationController
       'メンバーを削除しました。'
     else
       'なんらかの原因で、削除できませんでした。'
-    end    
-  end  
-  
-  def email_reliable?(address)
-    address.match(/\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i)
+    end
   end
-  
+
+  # def email_reliable?(address)
+  #   address.match(/\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i)
+  # end
+
   def set_next_team(assign, assigned_user)
     another_team = Assign.find_by(user_id: assigned_user.id).team
     change_keep_team(assigned_user, another_team) if assigned_user.keep_team_id == assign.team_id

@@ -21,6 +21,21 @@ class Team < ApplicationRecord
     assigns.create(user: user)
   end
 
+  def invite_member_based_on_email(email)
+    user = User.find_by(email: email.downcase)
+
+    if user.present?
+      assigns.create(user: user)
+    else
+      #「assigns.create」の先で失敗する（＝Assignレコードにエラーメッセージ格納して返す）こともあるので、
+      #こちらの失敗でも【Assignレコードにエラーメッセージ格納して返す】
+      assigns = Assign.new
+      assigns.errors.add(" ","メールアドレスに該当するユーザーが存在しません")
+      return assigns
+    end
+
+  end
+
   def is_owner_teammember
     if Team.find(id).members.find_by(id:owner_id).nil?
       errors.add(" ","チームメンバーでない方をリーダーにしようとしています。")
