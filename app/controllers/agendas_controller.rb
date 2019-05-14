@@ -21,7 +21,12 @@ class AgendasController < ApplicationController
     if current_user.save && @agenda.save
       redirect_to dashboard_url, notice: 'アジェンダ作成に成功しました！'
     else
-      render :new
+
+      #入力情報をセッション、エラー情報をフラッシュに保存して
+      flash[:danger] = @agenda.errors.full_messages
+      redirect_to dashboard_url
+      # render :new
+
     end
   end
 

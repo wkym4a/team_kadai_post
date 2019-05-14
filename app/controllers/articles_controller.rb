@@ -8,6 +8,7 @@ class ArticlesController < ApplicationController
   end
 
   def show
+
     @comments = @article.comments
     @comment = @article.comments.build
     @working_team = @article.team
@@ -15,9 +16,19 @@ class ArticlesController < ApplicationController
   end
 
   def new
+
     @agenda = Agenda.find(params[:agenda_id])
     @team = @agenda.team
     @article = @agenda.articles.build
+
+    if session["agenda_" + @article.agenda_id.to_s + "_article"].present?
+      #session情報がある場合はそれを取得して、取得したsessionはクリアする（エラー発生によりredirect_toした場合の処理）
+      @article = Article.new(session["agenda_" + @article.agenda_id.to_s + "_article"])
+
+      session["agenda_" + @article.agenda_id.to_s + "_article"] = nil
+
+    end
+
   end
 
   def edit
@@ -25,14 +36,23 @@ class ArticlesController < ApplicationController
   end
 
   def create
-    agenda = Agenda.find(params[:agenda_id])
-    article = agenda.articles.build(article_params)
-    article.user = current_user
-    article.team_id = agenda.team_id
-    if article.save
-      redirect_to article_url(article), notice: '記事作成に成功しました！'
+
+    @agenda = Agenda.find(params[:agenda_id])
+    @article = @agenda.articles.build(article_params)
+    @article.user = current_user
+    @article.team_id = @agenda.team_id
+
+    if @article.save
+      redirect_to article_url(@article), notice: '記事作成に成功しました！'
     else
-      render :new
+
+      #入力情報をセッション、エラー情報をフラッシュに保存して
+      session["agenda_" + @article.agenda_id.to_s + "_article"] = @article
+      flash[:danger] = @article.errors.full_messages
+      #redirect_to(renderだとurlがおかしくなるため)
+      redirect_to new_agenda_article_path(@agenda.id)
+
+      # render :new
     end
   end
 
