@@ -1,3 +1,4 @@
+
 <%= form_with(model: [article, comment]) do |form| %>
   <% if comment.errors.any? %>
     <div id="error_explanation">
@@ -11,7 +12,7 @@
   <% end %>
 
   <div class="field">
-    <%= form.text_area :content, class: "comment_input" %>
+    <%= form.text_area :content, class: "comment_input",maxlength: 10000  %>
   </div>
 
   <div class="actions">
